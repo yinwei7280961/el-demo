@@ -15,10 +15,6 @@
                     class="handle-del mr10"
                     @click="delAllSelection"
                 >批量删除</el-button>
-                <el-select v-model="query.address" placeholder="地址" class="handle-select mr10">
-                    <el-option key="1" label="广东省" value="广东省"></el-option>
-                    <el-option key="2" label="湖南省" value="湖南省"></el-option>
-                </el-select>
                 <el-input v-model="query.name" placeholder="用户名" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
                 <el-button type="primary" icon="el-icon-circle-plus" @click="handleAdd">新增</el-button>
@@ -126,15 +122,16 @@ export default {
             	methods:'get',
             	params:query||{},
             }).then((res)=>{
-            	console.log(res);
-            	this.tableData = res.data;
-                this.pageTotal = res.total || 50;
+            	if(res.status){
+            		this.tableData = res.data;
+                    this.pageTotal = res.total || 50;
+            	}
             });
         },
         // 触发搜索按钮
         handleSearch() {
             this.$set(this.query, 'pageIndex', 1);
-            this.getData();
+            this.getData({name:this.query.name});
         },
         // 删除操作
         handleDelete(index, row) {
@@ -143,8 +140,16 @@ export default {
                 type: 'warning'
             })
                 .then(() => {
-                    this.$message.success('删除成功');
-                    this.tableData.splice(index, 1);
+                	request({
+		            	url:'/api/delete',
+		            	methods:'get',
+		            	params:{id:row._id},
+		            }).then((res)=>{
+		            	if(res.status){
+		            		this.$message.success('删除成功');
+	                        this.tableData.splice(index, 1);
+		            	}
+		            });
                 })
                 .catch(() => {});
         },

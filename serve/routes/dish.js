@@ -52,5 +52,22 @@ router.post('/edit',async function(req,res){
     	next(err);
     }
 });
-
+router.get('/delete',async function(req,res){
+	var body=req.body;
+	console.log(body)
+    try{
+    	var id=req.query.id;
+		Dish.findByIdAndRemove(id,function(err){
+			if(err){
+			  return  res.status(500).send('Sever error');	
+			}
+			res.status(200).json({
+			 	status:1,
+			 	data:"删除成功"
+			});
+		});
+    }catch(err){
+    	next(err);
+    }
+});
 module.exports=router;
